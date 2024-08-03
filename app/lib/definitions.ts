@@ -86,3 +86,13 @@ export type InvoiceForm = {
   amount: number;
   status: 'pending' | 'paid';
 };
+
+export type FormattedStaffTable = {
+  id: string;
+  name: string;
+  email: string;
+  image_url: string;
+  total_contract: number;
+  total_aktif: string;
+  total_pasif: string;
+};

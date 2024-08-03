@@ -1,8 +1,36 @@
 import "@/app/ui/global.css";
 import { inter } from "@/app/ui/fonts";
 import { Metadata } from "next";
-
-export const metadata: Metadata = {
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
+//import "./globals.css";
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <ClerkProvider>
+      <html lang='en'>
+        <body>
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
+  );
+}
+/* export const metadata: Metadata = {
   title: {
     template: "%s | Acme Dashboard",
     default: "Acme Dashboard",
@@ -20,4 +48,4 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>{children}</body>
     </html>
   );
-}
+} */

@@ -215,3 +215,36 @@ export async function fetchFilteredCustomers(query: string) {
     throw new Error('Failed to fetch customer table.');
   }
 }
+
+export async function fetchFilteredStaff(query: string) {
+  try {
+    const data = await sql<StaffTableType>`
+		SELECT
+		  staff.id,
+		  staff.name,
+		  staff.email,
+		  staff.image_url,
+		  COUNT(invoices.id) AS total_invoices,
+		  SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
+		  SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
+		FROM staff
+		LEFT JOIN invoices ON staff.id = invoices.staff_id
+		WHERE
+		  staff.name ILIKE ${`%${query}%`} OR
+        staff.email ILIKE ${`%${query}%`}
+		GROUP BY staff.id, staff.name, staff.email, staff.image_url
+		ORDER BY staff.name ASC
+	  `;
+
+    const staff = data.rows.map((staff) => ({
+      ...staff,
+      total_pending: formatCurrency(staff.total_aktif),
+      total_paid: formatCurrency(staff.total_pasif),
+    }));
+
+    return staff;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch staff table.');
+  }
+}
